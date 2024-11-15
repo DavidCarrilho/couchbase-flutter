@@ -1,7 +1,15 @@
 import 'package:checklist/app/entities/shopping_item_entity.dart';
 
+import '../services/couchbase_service.dart';
+
 class ChecklistRepository {
+  final CouchbaseService couchbaseService;
+
+  ChecklistRepository({required this.couchbaseService});
+
   final List<ShoppingItemEntity> _items = [];
+
+  final collectionName = 'checklist';
 
   Future<List<ShoppingItemEntity>> fetchAll() async {
     await Future.delayed(const Duration(milliseconds: 100));
@@ -9,8 +17,11 @@ class ChecklistRepository {
   }
 
   Future<void> addItem(ShoppingItemEntity item) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _items.add(item.copyWith(id: _items.length + 1));
+    await couchbaseService.add(
+      data: item.toMap(),
+      collectionName: collectionName,
+    );
+    print('item salvo');
   }
 
   Future<ShoppingItemEntity> updateItem({

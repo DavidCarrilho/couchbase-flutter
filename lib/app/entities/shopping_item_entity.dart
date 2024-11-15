@@ -24,4 +24,12 @@ class ShoppingItemEntity {
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'isCompleted': isCompleted,
+      'createdAt': createdAt.millisecondsSinceEpoch,
+    };
+  }
 }
