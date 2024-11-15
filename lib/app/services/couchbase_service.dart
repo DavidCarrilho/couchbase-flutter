@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:cbl/cbl.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../utils/couchbase_constants.dart';
 
 class CouchbaseService {
   AsyncDatabase? database;
+  AsyncReplicator? replicator;
+  StreamSubscription<List<ConnectivityResult>>? networkConnection;
 
   Future<void> init() async {
     database ??= await Database.openAsync('database');
@@ -36,8 +41,8 @@ class CouchbaseService {
           channels: [CouchbaseContants.channel],
         ),
       );
-      final replicator = await Replicator.createAsync(replicatorConfig);
-      replicator.addChangeListener(
+      replicator = await Replicator.createAsync(replicatorConfig);
+      replicator?.addChangeListener(
         (change) {
           if (change.status.error != null) {
             print('Ocorreu um erro na replicação');
@@ -48,8 +53,22 @@ class CouchbaseService {
           }
         },
       );
-      await replicator.start();
+      await replicator?.start();
     }
+  }
+
+  void networkStatusListen() {
+    networkConnection = Connectivity().onConnectivityChanged.listen(
+      (events) {
+        if (events.contains(ConnectivityResult.none)) {
+          print('sem conexão com a internet');
+          replicator?.stop();
+        } else {
+          print('conectados com a internet');
+          replicator?.start();
+        }
+      },
+    );
   }
 
   Future<bool> add({
