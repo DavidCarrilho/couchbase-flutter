@@ -23,14 +23,18 @@ class CouchbaseService {
     required String collectionName,
     String? filter,
   }) async {
+    await init();
     await database?.createCollection(collectionName);
     final query = await database?.createQuery(
-      'SELECT * FROM $collectionName ${filter != null ? 'WHERE $filter' : ''}',
+      'SELECT META().id, * FROM $collectionName ${filter != null ? 'WHERE $filter' : ''}',
     );
     final result = await query?.execute();
     final results = await result?.allResults();
     final data = results
-        ?.map((e) => e.toPlainMap()['checklist'] as Map<String, dynamic>)
+        ?.map((e) => {
+              'id': e.string('id'),
+              ...(e.toPlainMap()['checklist'] as Map<String, dynamic>)
+            })
         .toList();
     return data ?? [];
   }

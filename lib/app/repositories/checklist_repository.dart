@@ -28,7 +28,7 @@ class ChecklistRepository {
   }
 
   Future<ShoppingItemEntity> updateItem({
-    required int id,
+    required String id,
     String? title,
     bool? isCompleted,
   }) async {
@@ -46,7 +46,7 @@ class ChecklistRepository {
     }
   }
 
-  Future<void> deleteItem(int id) async {
+  Future<void> deleteItem(String id) async {
     await Future.delayed(const Duration(milliseconds: 100));
     _items.removeWhere((item) => item.id == id);
   }

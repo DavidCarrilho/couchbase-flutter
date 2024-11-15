@@ -1,5 +1,5 @@
 class ShoppingItemEntity {
-  int? id;
+  String? id;
   String title;
   DateTime createdAt;
   bool isCompleted;
@@ -12,7 +12,7 @@ class ShoppingItemEntity {
   });
 
   ShoppingItemEntity copyWith({
-    int? id,
+    String? id,
     String? title,
     DateTime? createdAt,
     bool? isCompleted,

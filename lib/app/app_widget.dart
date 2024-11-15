@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => FetchChecklistCubit(
             context.read<ChecklistRepository>(),
-          )..fetchItems(),
+          ),
         ),
         BlocProvider(
           create: (context) => AddChecklistCubit(

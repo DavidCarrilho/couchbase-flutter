@@ -8,7 +8,7 @@ class UpdateChecklistCubit extends Cubit<UpdateChecklistState> {
   UpdateChecklistCubit(this._repository) : super(UpdateChecklistInitial());
 
   Future<void> updateItem(
-    int id, {
+    String id, {
     String? title,
     bool? isCompleted,
   }) async {

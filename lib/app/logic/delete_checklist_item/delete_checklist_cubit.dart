@@ -7,7 +7,7 @@ class DeleteChecklistCubit extends Cubit<DeleteChecklistState> {
 
   DeleteChecklistCubit(this._repository) : super(DeleteChecklistInitial());
 
-  Future<void> deleteItem(int id) async {
+  Future<void> deleteItem(String id) async {
     try {
       await _repository.deleteItem(id);
       emit(DeleteChecklistSuccess(id));

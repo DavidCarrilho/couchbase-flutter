@@ -3,7 +3,7 @@ abstract class DeleteChecklistState {}
 class DeleteChecklistInitial extends DeleteChecklistState {}
 
 class DeleteChecklistSuccess extends DeleteChecklistState {
-  final int itemId;
+  final String itemId;
   DeleteChecklistSuccess(this.itemId);
 }
 
