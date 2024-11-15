@@ -9,6 +9,49 @@ class CouchbaseService {
     database ??= await Database.openAsync('database');
   }
 
+  Future<void> startReplication({
+    required String collectionName,
+    required Function() onSynced,
+  }) async {
+    final collection = await database?.createCollection(
+      collectionName,
+      CouchbaseContants.scope,
+    );
+    if (collection != null) {
+      final replicatorConfig = ReplicatorConfiguration(
+        target: UrlEndpoint(
+          Uri.parse(CouchbaseContants.publicConnectionUrl),
+        ),
+        authenticator: BasicAuthenticator(
+          username: CouchbaseContants.userName,
+          password: CouchbaseContants.password,
+        ),
+        continuous: true,
+        replicatorType: ReplicatorType.pushAndPull,
+        enableAutoPurge: true,
+      );
+      replicatorConfig.addCollection(
+        collection,
+        CollectionConfiguration(
+          channels: [CouchbaseContants.channel],
+        ),
+      );
+      final replicator = await Replicator.createAsync(replicatorConfig);
+      replicator.addChangeListener(
+        (change) {
+          if (change.status.error != null) {
+            print('Ocorreu um erro na replicação');
+          }
+          if (change.status.activity == ReplicatorActivityLevel.idle) {
+            print('ocorreu uma sincronização');
+            onSynced();
+          }
+        },
+      );
+      await replicator.start();
+    }
+  }
+
   Future<bool> add({
     required Map<String, dynamic> data,
     required String collectionName,
@@ -34,7 +77,7 @@ class CouchbaseService {
       CouchbaseContants.scope,
     );
     final query = await database?.createQuery(
-      'SELECT META().id, * FROM $collectionName ${filter != null ? 'WHERE $filter' : ''}',
+      'SELECT META().id, * FROM ${CouchbaseContants.scope}.$collectionName ${filter != null ? 'WHERE $filter' : ''}',
     );
     final result = await query?.execute();
     final results = await result?.allResults();

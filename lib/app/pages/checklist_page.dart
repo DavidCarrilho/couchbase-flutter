@@ -11,6 +11,8 @@ import '../logic/add_checklist_item/add_checklist_cubit.dart';
 import '../logic/checklist/checklist_state.dart';
 import '../logic/delete_checklist_item/delete_checklist_cubit.dart';
 import '../logic/update_checklist_item/update_checklist_cubit.dart';
+import '../services/couchbase_service.dart';
+import '../utils/couchbase_constants.dart';
 import '../widget/list_section_widget.dart';
 
 class ChecklistPage extends StatefulWidget {
@@ -80,7 +82,17 @@ class _ChecklistPageState extends State<ChecklistPage> {
   void initState() {
     super.initState();
 
-    context.read<FetchChecklistCubit>().fetchItems();
+    initApp();
+  }
+
+  Future<void> initApp() async {
+    await context.read<FetchChecklistCubit>().fetchItems();
+    context.read<CouchbaseService>().startReplication(
+          collectionName: CouchbaseContants.collection,
+          onSynced: () {
+            context.read<FetchChecklistCubit>().fetchItems();
+          },
+        );
   }
 
   @override
