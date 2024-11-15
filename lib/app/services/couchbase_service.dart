@@ -38,4 +38,26 @@ class CouchbaseService {
         .toList();
     return data ?? [];
   }
+
+  Future<bool> edit({
+    required String collectionName,
+    required String id,
+    required Map<String, dynamic> data,
+  }) async {
+    final collection = await database?.createCollection(collectionName);
+    if (collection != null) {
+      final doc = await collection.document(id);
+      if (doc != null) {
+        final mutableDoc = doc.toMutable();
+        data.forEach(
+          (key, value) {
+            mutableDoc.setValue(value, key: key);
+          },
+        );
+        final result = await collection.saveDocument(mutableDoc);
+        return result;
+      }
+    }
+    return false;
+  }
 }
