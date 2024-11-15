@@ -1,13 +1,14 @@
 import 'package:checklist/app/entities/shopping_item_entity.dart';
 
 import '../services/couchbase_service.dart';
+import '../utils/couchbase_constants.dart';
 
 class ChecklistRepository {
   final CouchbaseService couchbaseService;
 
   ChecklistRepository({required this.couchbaseService});
 
-  final collectionName = 'checklist';
+  final collectionName = CouchbaseContants.collection;
 
   Future<List<ShoppingItemEntity>> fetchAll() async {
     final result = await couchbaseService.fetch(

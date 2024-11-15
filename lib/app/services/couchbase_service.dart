@@ -1,5 +1,7 @@
 import 'package:cbl/cbl.dart';
 
+import '../utils/couchbase_constants.dart';
+
 class CouchbaseService {
   AsyncDatabase? database;
 
@@ -11,7 +13,10 @@ class CouchbaseService {
     required Map<String, dynamic> data,
     required String collectionName,
   }) async {
-    final collection = await database?.createCollection(collectionName);
+    final collection = await database?.createCollection(
+      collectionName,
+      CouchbaseContants.scope,
+    );
     if (collection != null) {
       final document = MutableDocument(data);
       return await collection.saveDocument(document);
@@ -24,7 +29,10 @@ class CouchbaseService {
     String? filter,
   }) async {
     await init();
-    await database?.createCollection(collectionName);
+    await database?.createCollection(
+      collectionName,
+      CouchbaseContants.scope,
+    );
     final query = await database?.createQuery(
       'SELECT META().id, * FROM $collectionName ${filter != null ? 'WHERE $filter' : ''}',
     );
@@ -33,7 +41,7 @@ class CouchbaseService {
     final data = results
         ?.map((e) => {
               'id': e.string('id'),
-              ...(e.toPlainMap()['checklist'] as Map<String, dynamic>)
+              ...(e.toPlainMap()[collectionName] as Map<String, dynamic>)
             })
         .toList();
     return data ?? [];
@@ -44,7 +52,10 @@ class CouchbaseService {
     required String id,
     required Map<String, dynamic> data,
   }) async {
-    final collection = await database?.createCollection(collectionName);
+    final collection = await database?.createCollection(
+      collectionName,
+      CouchbaseContants.scope,
+    );
     if (collection != null) {
       final doc = await collection.document(id);
       if (doc != null) {
@@ -65,7 +76,10 @@ class CouchbaseService {
     required String collectionName,
     required String id,
   }) async {
-    final collection = await database?.createCollection(collectionName);
+    final collection = await database?.createCollection(
+      collectionName,
+      CouchbaseContants.scope,
+    );
     if (collection != null) {
       final doc = await collection.document(id);
       if (doc != null) {
