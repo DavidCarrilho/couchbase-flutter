@@ -11,6 +11,7 @@ import '../logic/add_checklist_item/add_checklist_cubit.dart';
 import '../logic/checklist/checklist_state.dart';
 import '../logic/delete_checklist_item/delete_checklist_cubit.dart';
 import '../logic/update_checklist_item/update_checklist_cubit.dart';
+import '../services/couchbase_service.dart';
 import '../widget/list_section_widget.dart';
 
 class ChecklistPage extends StatefulWidget {
@@ -81,11 +82,28 @@ class _ChecklistPageState extends State<ChecklistPage> {
     super.initState();
 
     context.read<FetchChecklistCubit>().fetchItems();
+
+    context.read<CouchbaseService>().init().then(
+      (value) async {
+        final data = await context.read<CouchbaseService>().fetch(
+              collectionName: 'checklist',
+            );
+        print(data.toString());
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.read<CouchbaseService>().add(
+            data: {'id': 1, 'name': 'item', 'checked': true},
+            collectionName: 'checklist',
+          );
+        },
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
