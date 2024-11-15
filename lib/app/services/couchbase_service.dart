@@ -18,4 +18,18 @@ class CouchbaseService {
     }
     return false;
   }
+
+  Future<List<Map<String, dynamic>>> fetch({
+    required String collectionName,
+    String? filter,
+  }) async {
+    await database?.createCollection(collectionName);
+    final query = await database?.createQuery(
+      'SELECT * FROM $collectionName ${filter != null ? 'WHERE $filter' : ''}',
+    );
+    final result = await query?.execute();
+    final results = await result?.allResults();
+    final data = results?.map((e) => e.toPlainMap()).toList();
+    return data ?? [];
+  }
 }
