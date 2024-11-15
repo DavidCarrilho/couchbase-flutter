@@ -39,6 +39,11 @@ class CouchbaseService {
         collection,
         CollectionConfiguration(
           channels: [CouchbaseContants.channel],
+          conflictResolver: ConflictResolver.from(
+            (conflict) {
+              return conflict.remoteDocument ?? conflict.localDocument;
+            },
+          ),
         ),
       );
       replicator = await Replicator.createAsync(replicatorConfig);
@@ -81,7 +86,10 @@ class CouchbaseService {
     );
     if (collection != null) {
       final document = MutableDocument(data);
-      return await collection.saveDocument(document);
+      return await collection.saveDocument(
+        document,
+        ConcurrencyControl.lastWriteWins,
+      );
     }
     return false;
   }
@@ -127,7 +135,10 @@ class CouchbaseService {
             mutableDoc.setValue(value, key: key);
           },
         );
-        final result = await collection.saveDocument(mutableDoc);
+        final result = await collection.saveDocument(
+          mutableDoc,
+          ConcurrencyControl.lastWriteWins,
+        );
         return result;
       }
     }
@@ -145,7 +156,10 @@ class CouchbaseService {
     if (collection != null) {
       final doc = await collection.document(id);
       if (doc != null) {
-        final result = await collection.deleteDocument(doc);
+        final result = await collection.deleteDocument(
+          doc,
+          ConcurrencyControl.lastWriteWins,
+        );
         return result;
       }
     }
