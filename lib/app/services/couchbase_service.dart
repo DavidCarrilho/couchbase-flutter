@@ -60,4 +60,19 @@ class CouchbaseService {
     }
     return false;
   }
+
+  Future<bool> delete({
+    required String collectionName,
+    required String id,
+  }) async {
+    final collection = await database?.createCollection(collectionName);
+    if (collection != null) {
+      final doc = await collection.document(id);
+      if (doc != null) {
+        final result = await collection.deleteDocument(doc);
+        return result;
+      }
+    }
+    return false;
+  }
 }

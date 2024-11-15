@@ -7,8 +7,6 @@ class ChecklistRepository {
 
   ChecklistRepository({required this.couchbaseService});
 
-  final List<ShoppingItemEntity> _items = [];
-
   final collectionName = 'checklist';
 
   Future<List<ShoppingItemEntity>> fetchAll() async {
@@ -43,7 +41,9 @@ class ChecklistRepository {
   }
 
   Future<void> deleteItem(String id) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _items.removeWhere((item) => item.id == id);
+    await couchbaseService.delete(
+      collectionName: collectionName,
+      id: id,
+    );
   }
 }
