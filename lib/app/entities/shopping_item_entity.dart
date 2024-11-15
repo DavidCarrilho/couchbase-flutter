@@ -32,4 +32,13 @@ class ShoppingItemEntity {
       'createdAt': createdAt.millisecondsSinceEpoch,
     };
   }
+
+  factory ShoppingItemEntity.fromMap(Map<String, dynamic> data) {
+    return ShoppingItemEntity(
+      title: data['title'],
+      createdAt: DateTime.fromMillisecondsSinceEpoch(data['createdAt']),
+      isCompleted: data['isCompleted'],
+      id: data['id'],
+    );
+  }
 }

@@ -12,8 +12,11 @@ class ChecklistRepository {
   final collectionName = 'checklist';
 
   Future<List<ShoppingItemEntity>> fetchAll() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    return List<ShoppingItemEntity>.from(_items);
+    final result = await couchbaseService.fetch(
+      collectionName: collectionName,
+    );
+    final data = result.map(ShoppingItemEntity.fromMap).toList();
+    return data;
   }
 
   Future<void> addItem(ShoppingItemEntity item) async {

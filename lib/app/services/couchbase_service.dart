@@ -29,7 +29,9 @@ class CouchbaseService {
     );
     final result = await query?.execute();
     final results = await result?.allResults();
-    final data = results?.map((e) => e.toPlainMap()).toList();
+    final data = results
+        ?.map((e) => e.toPlainMap()['checklist'] as Map<String, dynamic>)
+        .toList();
     return data ?? [];
   }
 }
